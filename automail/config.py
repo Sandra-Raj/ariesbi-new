@@ -28,3 +28,7 @@ EMAIL_CONFIG = {
 }
 
 API_IDLE_BASE_URL = "http://localhost:8000/listing/client-listings-idle"
+
+IMAGE_PATH = "C:/xampp/htdocs/ariesbi/automail/images"
+
+DATA_PATH = "C:/xampp/htdocs/ariesbi/ariesbi-analytics/data"
