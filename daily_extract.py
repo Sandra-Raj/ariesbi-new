@@ -18,16 +18,47 @@ DATA_DIR.mkdir(exist_ok=True)
 """ TABLE DEBTORS MASTER"""
 
 df_debtors_master = pd.read_sql("""
-    SELECT debtor_no,debtor_code,name,address,po_box,city,country,phone,fax,email,curr_code,client_type,area,client_status
+    SELECT debtor_no,debtor_code,name,address,po_box,city,country,phone,fax,email,date(added_date) AS added_date,curr_code,client_type,area,client_status
     FROM 0_debtors_master
     WHERE inactive =0
 """, engine)
+
+""" TABLE SALES ORDER"""
+
+df_sales_order = pd.read_sql("""
+    SELECT order_no,trans_type,job_type,job_title,debtor_no,branch_code,reference,ord_date,dimension_id,dimension2_id,dimension3_id,rate
+    FROM 0_sales_orders
+""", engine)
+
+df_sales_order['ord_date'] = pd.to_datetime(df_sales_order['ord_date'], errors='coerce')
+
+""" TABLE SALES ORDER REFERENCES"""
+
+df_sales_order_references = pd.read_sql("""
+    SELECT sales_order_reference_id,trans_type,trans_no,ref_trans_type,ref_trans_no,reference
+    FROM 0_sales_order_references
+""", engine)
+
+""" TABLE CUST ALLOCATIONS"""
+
+df_cust_allocations = pd.read_sql("""
+    SELECT id,alloc_amount,amt,date_alloc,trans_no_from,trans_type_from,trans_no_to,trans_type_to,bank_rate
+    FROM 0_cust_allocations
+""", engine)
+
+df_cust_allocations['date_alloc'] = pd.to_datetime(df_cust_allocations['date_alloc'], errors='coerce')
 
 """ TABLE CLIENT STATUS"""
 
 df_client_status = pd.read_sql("""
     SELECT id, client_status, dissallow_job, dissallow_enquiry, dissallow_quotation, dissallow_invoice, category
     FROM 0_client_status
+""", engine)
+
+""" TABLE CLIENT TYPE"""
+
+df_client_type = pd.read_sql("""
+    SELECT id, client_type FROM 0_client_type
 """, engine)
 
 """ TABLE CLIENT CREDIT PERIOD"""
@@ -223,6 +254,7 @@ df_dimensions["date_"] = (pd.to_datetime( df_dimensions["date_"].astype(str),for
 df_dimensions["due_date"] = (pd.to_datetime( df_dimensions["due_date"].astype(str),format='%Y-%m-%d',errors="coerce"))
 df_dimensions["close_date_"] = (pd.to_datetime( df_dimensions["close_date_"].astype(str),format='%Y-%m-%d',errors="coerce"))
 df_dimensions["added_date"] = (pd.to_datetime( df_dimensions["added_date"].astype(str),format='%Y-%m-%d',errors="coerce"))
+df_debtors_master["added_date"] = (pd.to_datetime( df_debtors_master["added_date"].astype(str),format='%Y-%m-%d',errors="coerce"))
 
 df_client_credit_period["date_of_min_payment"] = (pd.to_datetime( df_client_credit_period["date_of_min_payment"].astype(str),format='%Y-%m-%d',errors="coerce"))
 df_client_credit_period["min_inv_date"] = (pd.to_datetime( df_client_credit_period["min_inv_date"].astype(str),format='%Y-%m-%d',errors="coerce"))
@@ -239,6 +271,8 @@ df_country = normalize_mysql_dates(df_country)
 df_region = normalize_mysql_dates(df_region)
 df_enquiry = normalize_mysql_dates(df_enquiry)
 df_dimensions = normalize_mysql_dates(df_dimensions)
+df_sales_order = normalize_mysql_dates(df_sales_order)
+df_cust_allocations = normalize_mysql_dates(df_cust_allocations)
 df_client_type = normalize_mysql_dates(df_client_type)
 df_debtor_trans = normalize_mysql_dates(df_debtor_trans)
 df_client_activity_status = normalize_mysql_dates(df_client_activity_status)
@@ -262,4 +296,8 @@ df_job_activities.to_parquet(DATA_DIR / "job_activities.parquet", index=False,en
 df_client_enquiry_job_activity.to_parquet(DATA_DIR / "client_enquiry_job_activity.parquet", index=False,engine="pyarrow")
 df_client_status.to_parquet(DATA_DIR / "client_status.parquet", index=False,engine="pyarrow")
 df_client_credit_period.to_parquet(DATA_DIR / "client_credit_period.parquet", index=False,engine="pyarrow")
+df_sales_order.to_parquet(DATA_DIR / "sales_order.parquet", index=False,engine="pyarrow")
+df_cust_allocations.to_parquet(DATA_DIR / "cust_allocations.parquet", index=False,engine="pyarrow")
+df_sales_order_references.to_parquet(DATA_DIR / "sales_order_references.parquet", index=False,engine="pyarrow")
+df_client_type.to_parquet(DATA_DIR / "sector.parquet", index=False,engine="pyarrow")
 print("Daily extract completed")
