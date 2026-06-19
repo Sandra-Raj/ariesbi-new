@@ -18,7 +18,7 @@ DATA_DIR.mkdir(exist_ok=True)
 """ TABLE DEBTORS MASTER"""
 
 df_debtors_master = pd.read_sql("""
-    SELECT debtor_no,debtor_code,name,address,po_box,city,country,phone,fax,email,date(added_date) AS added_date,curr_code,client_type,area,client_status
+    SELECT debtor_no,debtor_code,name,address,po_box,city,country,phone,fax,email,date(added_date) AS added_date,client_credit_days,curr_code,client_type,area,client_status
     FROM 0_debtors_master
     WHERE inactive =0
 """, engine)
