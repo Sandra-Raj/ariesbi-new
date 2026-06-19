@@ -194,7 +194,7 @@ df_enquiry['enquiry_date'] = pd.to_datetime(df_enquiry['enquiry_date'], errors='
 """ 0_DEBTOR_TRANS """
 
 df_debtor_trans = pd.read_sql(f"""
-    SELECT debtor_no,trans_no,tran_date,ov_amount,alloc,rate,tax_amount,total_expense_aed,dimension2_id,dimension_id,dimension3_id
+    SELECT debtor_no,trans_no,tran_date,ov_amount,alloc,rate,tax_amount,total_expense_aed,order_,dimension2_id,dimension_id,dimension3_id
     FROM 0_debtor_trans
     WHERE tran_date >= '{run_date}'
 """, engine)
