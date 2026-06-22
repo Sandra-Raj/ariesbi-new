@@ -194,7 +194,7 @@ df_enquiry['enquiry_date'] = pd.to_datetime(df_enquiry['enquiry_date'], errors='
 """ 0_DEBTOR_TRANS """
 
 df_debtor_trans = pd.read_sql(f"""
-    SELECT debtor_no,trans_no,tran_date,ov_amount,alloc,rate,tax_amount,total_expense_aed,order_,dimension2_id,dimension_id,dimension3_id
+    SELECT debtor_no,trans_no,tran_date,ov_amount,alloc,rate,tax_amount,total_expense_aed,order_,payment_terms,dimension2_id,dimension_id,dimension3_id
     FROM 0_debtor_trans
     WHERE tran_date >= '{run_date}'
 """, engine)
@@ -213,7 +213,7 @@ FROM 0_client_activity_status
 def normalize_mysql_dates(df):
     """Convert all object/date columns to datetime64[ns] safely for PyArrow."""
     for col in df.columns:
-        if col.lower().endswith(("date", "_date", "date_","enquiry_date","job_date","enquiry_date","job_da")):
+        if col.lower().endswith(("date", "_date", "date_","enquiry_date","job_date","job_da")):
             df[col] = pd.to_datetime(df[col].astype(str),format='%Y-%m-%d', errors="coerce")
     return df
 ####################################################################################
