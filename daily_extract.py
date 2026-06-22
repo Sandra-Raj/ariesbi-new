@@ -201,6 +201,16 @@ df_debtor_trans = pd.read_sql(f"""
 
 df_debtor_trans['tran_date'] = pd.to_datetime(df_debtor_trans['tran_date'], errors='coerce')
 
+""" 0_CREDIT_NOTE_TRANS """
+
+df_credit_note_trans = pd.read_sql(f"""
+    SELECT trans_no,ov_amount,type,debtor_no,tran_date,rate,order_,dimension2_id,dimension_id,dimension3_id,is_write_off
+    FROM 0_credit_note_trans
+    WHERE tran_date >= '{run_date}'
+""", engine)
+
+df_credit_note_trans['tran_date'] = pd.to_datetime(df_credit_note_trans['tran_date'], errors='coerce')
+
 """ 0_CLIENT_ACTIVITY_STATUS """ 
 
 ##################################################################################
@@ -273,6 +283,7 @@ df_enquiry = normalize_mysql_dates(df_enquiry)
 df_dimensions = normalize_mysql_dates(df_dimensions)
 df_sales_order = normalize_mysql_dates(df_sales_order)
 df_cust_allocations = normalize_mysql_dates(df_cust_allocations)
+df_credit_note_trans = normalize_mysql_dates(df_credit_note_trans)
 df_client_type = normalize_mysql_dates(df_client_type)
 df_debtor_trans = normalize_mysql_dates(df_debtor_trans)
 df_client_activity_status = normalize_mysql_dates(df_client_activity_status)
@@ -298,6 +309,7 @@ df_client_status.to_parquet(DATA_DIR / "client_status.parquet", index=False,engi
 df_client_credit_period.to_parquet(DATA_DIR / "client_credit_period.parquet", index=False,engine="pyarrow")
 df_sales_order.to_parquet(DATA_DIR / "sales_order.parquet", index=False,engine="pyarrow")
 df_cust_allocations.to_parquet(DATA_DIR / "cust_allocations.parquet", index=False,engine="pyarrow")
+df_credit_note_trans.to_parquet(DATA_DIR / "credit_note_trans.parquet", index=False,engine="pyarrow")
 df_sales_order_references.to_parquet(DATA_DIR / "sales_order_references.parquet", index=False,engine="pyarrow")
 df_client_type.to_parquet(DATA_DIR / "sector.parquet", index=False,engine="pyarrow")
 print("Daily extract completed")
